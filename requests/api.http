@@ -1,0 +1,56 @@
+### Для IntelliJ HTTP Client. Замените пароль ADMIN при необходимости.
+@url = http://localhost:8080
+@admin = admin
+@adminPassword = change_this_admin_password
+@guest = guest1
+@guestPassword = Password123!
+
+### Регистрация
+POST {{url}}/api/users/register
+Content-Type: application/json
+
+{"username":"guest1","email":"guest1@example.org","password":"Password123!","role":"USER"}
+
+### Создание отеля
+POST {{url}}/api/hotels
+Authorization: Basic {{admin}} {{adminPassword}}
+Content-Type: application/json
+
+{"name":"Aurora Hotel","advertisementTitle":"Комфорт в центре","city":"Москва","address":"Тверская, 10","distanceFromCenter":1.50}
+
+### Список отелей с фильтрацией
+GET {{url}}/api/hotels?city=Москва&page=0&size=10
+Authorization: Basic {{guest}} {{guestPassword}}
+
+### Создание номера
+POST {{url}}/api/rooms
+Authorization: Basic {{admin}} {{adminPassword}}
+Content-Type: application/json
+
+{"title":"Комфорт","description":"Номер на двух гостей","roomNumber":"201","price":6800.00,"maxGuests":2,"hotelId":1,"unavailableDates":["2026-11-12"]}
+
+### Фильтр свободных номеров
+GET {{url}}/api/rooms?guestCount=2&checkIn=2026-11-02&checkOut=2026-11-05
+Authorization: Basic {{guest}} {{guestPassword}}
+
+### Бронирование
+POST {{url}}/api/bookings
+Authorization: Basic {{guest}} {{guestPassword}}
+Content-Type: application/json
+
+{"roomId":1,"checkIn":"2026-11-02","checkOut":"2026-11-05"}
+
+### Рейтинг
+POST {{url}}/api/hotels/1/rating
+Authorization: Basic {{guest}} {{guestPassword}}
+Content-Type: application/json
+
+{"mark":5}
+
+### Список всех броней
+GET {{url}}/api/bookings?page=0&size=20
+Authorization: Basic {{admin}} {{adminPassword}}
+
+### CSV
+GET {{url}}/api/statistics/export
+Authorization: Basic {{admin}} {{adminPassword}}
