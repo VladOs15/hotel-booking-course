@@ -4,13 +4,18 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Entity @Table(name = "bookings")
-@Getter @Setter @NoArgsConstructor
+@Entity
+@Table(name = "bookings")
+@Getter
+@Setter
+@NoArgsConstructor
 public class Booking {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(name = "check_in", nullable = false)
     private LocalDate checkIn;
@@ -24,6 +29,9 @@ public class Booking {
     private AppUser user;
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
     @PrePersist
-    void created() { if (createdAt == null) createdAt = Instant.now(); }
+    void created() {
+        if (createdAt == null) createdAt = Instant.now();
+    }
 }

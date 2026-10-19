@@ -1,2 +1,6 @@
 package ru.course.hotelbooking.statistics;
-public enum StatisticsEventType { USER_REGISTERED, ROOM_BOOKED }
+
+public enum StatisticsEventType {
+    USER_REGISTERED,
+    ROOM_BOOKED
+}

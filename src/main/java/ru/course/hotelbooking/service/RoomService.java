@@ -9,10 +9,12 @@ import ru.course.hotelbooking.mapper.RoomMapper;
 import ru.course.hotelbooking.model.Room;
 import ru.course.hotelbooking.repository.*;
 import ru.course.hotelbooking.search.RoomSpecifications;
+
 import java.time.LocalDate;
 import java.util.*;
 
-@Service @RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class RoomService {
     private final RoomRepository rooms;
     private final BookingRepository bookings;
@@ -20,9 +22,15 @@ public class RoomService {
     private final RoomMapper mapper;
 
     @Transactional(readOnly = true)
-    public RoomResponse get(Long id) { return mapper.toResponse(entity(id)); }
+    public RoomResponse get(Long id) {
+        return mapper.toResponse(entity(id));
+    }
+
     @Transactional(readOnly = true)
-    public RoomRequest getEditDto(Long id) { return mapper.toEditDto(entity(id)); }
+    public RoomRequest getEditDto(Long id) {
+        return mapper.toEditDto(entity(id));
+    }
+
     @Transactional(readOnly = true)
     public PageResponse<RoomResponse> search(RoomFilter f, int page, int size) {
         if (f.checkIn() != null && f.checkOut() != null && !f.checkOut().isAfter(f.checkIn())) {
@@ -33,6 +41,7 @@ public class RoomService {
         }
         return PageResponse.from(rooms.findAll(RoomSpecifications.byFilter(f), Pages.of(page, size)), mapper::toResponse);
     }
+
     @Transactional
     public RoomResponse create(RoomRequest request) {
         if (rooms.existsByHotelIdAndRoomNumber(request.hotelId(), request.roomNumber()))
@@ -42,6 +51,7 @@ public class RoomService {
         room.setUnavailableDates(new HashSet<>(safeDays(request.unavailableDates())));
         return mapper.toResponse(rooms.save(room));
     }
+
     @Transactional
     public RoomResponse update(Long id, RoomRequest request) {
         Room room = rooms.findByIdForUpdate(id)
@@ -58,15 +68,18 @@ public class RoomService {
         room.getUnavailableDates().addAll(safeDays(request.unavailableDates()));
         return mapper.toResponse(room);
     }
+
     @Transactional
     public void delete(Long id) {
         Room room = entity(id);
         if (bookings.existsByRoomId(id)) throw new BadRequestException("Нельзя удалить номер с историей бронирований");
         rooms.delete(room);
     }
+
     public Room entity(Long id) {
         return rooms.findById(id).orElseThrow(() -> new NotFoundException("Номер не найден: " + id));
     }
+
     private Set<LocalDate> safeDays(Set<LocalDate> dates) {
         return dates == null ? Set.of() : dates;
     }

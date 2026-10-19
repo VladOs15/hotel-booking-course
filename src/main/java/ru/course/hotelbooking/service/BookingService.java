@@ -10,9 +10,11 @@ import ru.course.hotelbooking.mapper.BookingMapper;
 import ru.course.hotelbooking.model.*;
 import ru.course.hotelbooking.repository.*;
 import ru.course.hotelbooking.statistics.BookingCreated;
+
 import java.time.LocalDate;
 
-@Service @RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class BookingService {
     private final BookingRepository bookings;
     private final RoomRepository rooms;
@@ -25,12 +27,12 @@ public class BookingService {
         validateDates(request.checkIn(), request.checkOut());
         // Пессимистическая блокировка сериализует конкурирующие брони одного номера.
         Room room = rooms.findByIdForUpdate(request.roomId())
-            .orElseThrow(() -> new NotFoundException("Номер не найден: " + request.roomId()));
+                .orElseThrow(() -> new NotFoundException("Номер не найден: " + request.roomId()));
         if (bookings.existsOverlapping(room.getId(), request.checkIn(), request.checkOut())) {
             throw new BadRequestException("Номер уже забронирован на выбранные даты");
         }
         boolean blocked = room.getUnavailableDates().stream()
-            .anyMatch(date -> !date.isBefore(request.checkIn()) && date.isBefore(request.checkOut()));
+                .anyMatch(date -> !date.isBefore(request.checkIn()) && date.isBefore(request.checkOut()));
         if (blocked) throw new BadRequestException("Номер недоступен на одну из выбранных дат");
         Booking booking = new Booking();
         booking.setRoom(room);
@@ -42,10 +44,12 @@ public class BookingService {
                 request.checkIn(), request.checkOut()));
         return mapper.toResponse(booking);
     }
+
     @Transactional(readOnly = true)
     public PageResponse<BookingResponse> list(int page, int size) {
         return PageResponse.from(bookings.findAll(Pages.of(page, size)), mapper::toResponse);
     }
+
     private static void validateDates(LocalDate checkIn, LocalDate checkOut) {
         if (checkIn == null || checkOut == null || !checkOut.isAfter(checkIn)) {
             throw new BadRequestException("Дата выезда должна быть позже даты заезда");

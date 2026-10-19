@@ -1,6 +1,9 @@
 # Hotel Booking — финальная работа по Spring Framework
 
-Полноценный учебный REST-бэкенд сервиса бронирования отелей по **11 заданиям** из PDF курса «Разработка на Spring Framework». Реализовано управление каталогом отелей, комнатами, пользователями, бронированием, рейтингом, поиском с фильтрами и пагинацией, а также событийной статистикой через Kafka и MongoDB с выгрузкой CSV. Административная CMS представлена защищёнными REST-методами; **графический интерфейс CMS в задании не требуется**.
+REST-бэкенд сервиса бронирования отелей. 
+Реализовано управление каталогом отелей, комнатами, пользователями, бронированием, рейтингом, поиском с фильтрами и 
+пагинацией, а также событийной статистикой через Kafka и MongoDB с выгрузкой CSV. 
+Административная CMS представлена защищёнными REST-методами
 
 ## Технологии
 
@@ -30,9 +33,10 @@ docker compose ps
 docker compose logs -f app
 ```
 
-Порт REST API: `http://localhost:8080`. Автоматически запустятся `app`, `postgres`, `mongodb`, `zookeeper`, `kafka`. Flyway создаст схему PostgreSQL. При первом старте будет создан администратор с логином/паролем из `.env` (если его ещё нет). Пароль администратора — не менее 12 символов. В контейнере автоматически используются внутренние имена сервисов (`postgres`, `mongodb`, `kafka`).
-
-**Внимание:** сервисы могут стартовать не мгновенно; дождитесь готовности Kafka и лога успешного запуска Spring Boot. Для остановки `docker compose down`, для полной очистки данных `docker compose down -v` (удаляет содержимое БД!).
+Порт REST API: `http://localhost:8080`. 
+Автоматически запустятся `app`, `postgres`, `mongodb`, `zookeeper`, `kafka`. 
+Flyway создаст схему PostgreSQL. При первом старте будет создан администратор с логином/паролем из `.env` (если его ещё нет). 
+Пароль администратора — не менее 12 символов. В контейнере автоматически используются внутренние имена сервисов (`postgres`, `mongodb`, `kafka`).
 
 ## Локальный запуск без Docker для приложения
 
@@ -46,7 +50,7 @@ export MONGODB_URI=mongodb://localhost:27017/hotel_statistics
 export KAFKA_BOOTSTRAP_SERVERS=localhost:29092
 export APP_ADMIN_USERNAME=admin
 export APP_ADMIN_EMAIL=admin@example.com
-export APP_ADMIN_PASSWORD='change_this_admin_password'
+export APP_ADMIN_PASSWORD='admin'
 mvn clean test
 mvn spring-boot:run
 ```
@@ -59,7 +63,8 @@ docker compose up -d postgres mongodb zookeeper kafka
 mvn spring-boot:run
 ```
 
-Для jar: `mvn clean package` и `java -jar target/hotel-booking-1.0.0.jar`. Тесты из `src/test/java` выполняются `mvn test` и не требуют подключения к БД, так как это unit-тесты. Для проверки реальных SQL-запросов, ZooKeeper/Kafka и сети обязательно выполните ручной сценарий из `docs/TESTING.md` с запущенными контейнерами.
+Для jar: `mvn clean package` и `java -jar target/hotel-booking-1.0.0.jar`. Тесты из `src/test/java` выполняются `mvn test` и не требуют подключения к БД, так как это unit-тесты. 
+Для проверки реальных SQL-запросов, ZooKeeper/Kafka и сети обязательно выполните ручной сценарий из `docs/TESTING.md` с запущенными контейнерами.
 
 ## Первый сценарий API
 
@@ -196,22 +201,4 @@ docs/ARCHITECTURE.md
  docs/TESTING.md
 ```
 
-Схема в PDF соответствует отношениям: один отель — много комнат и фотографий; одна комната — много броней и закрытых дат; один пользователь — много бронирований; роль пользователя — `USER`/`ADMIN`.
-
-## Соответствие 11 заданиям
-
-| № | Реализация |
-|---|---|
-| 1 | Spring Boot, `pom.xml`, PostgreSQL, `Dockerfile`, `docker-compose.yml` |
-| 2 | `Hotel`, JPA repository/service, DTO, MapStruct, CRUD API, общая пагинация |
-| 3 | `ErrorResponse`, `GlobalExceptionHandler` (400/404/500 + 403) |
-| 4 | `Room`, закрытые даты, JPA, DTO, MapStruct, CRUD API |
-| 5 | `AppUser`, уникальные username/email, repository/service, DTO, MapStruct, регистрация/CRUD |
-| 6 | `Booking`, проверка доступности, POST и GET API |
-| 7 | `UserDetailsService`, BCrypt, Basic Auth, роль-based endpoint security |
-| 8 | `POST /api/hotels/{id}/rating` с формулой из PDF |
-| 9 | `HotelSpecifications`, DTO фильтра, пагинация/общее количество записей |
-| 10 | `RoomSpecifications`, даты и исключение занятых дат, пагинация броней |
-| 11 | Kafka/ZooKeeper, события регистрации/броней, MongoDB JSON, admin CSV |
-
-**Примечание о проверке:** в окружении генерации исходный код и тесты были подготовлены, но собрать проект Maven и запустить Docker-контейнеры там не удалось ввиду отсутствия инструментов и доступа к пакетным репозиториям. Не считайте тесты подтверждённо пройденными, пока не выполнены команды выше в вашем окружении. См. `docs/TESTING.md`.
+Схема в PDF соответствует отношениям: один отель - много комнат и фотографий; одна комната - много броней и закрытых дат; один пользователь - много бронирований; роль пользователя - `USER`/`ADMIN`.

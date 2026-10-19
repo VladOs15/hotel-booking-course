@@ -10,18 +10,24 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.course.hotelbooking.model.*;
 import ru.course.hotelbooking.repository.UserRepository;
 
-@Component @RequiredArgsConstructor
+@Component
+@RequiredArgsConstructor
 public class AdminBootstrap implements ApplicationRunner {
     private final UserRepository users;
     private final PasswordEncoder encoder;
-    @Value("${app.admin.username:}") private String username;
-    @Value("${app.admin.email:admin@example.com}") private String email;
-    @Value("${app.admin.password:}") private String password;
+    @Value("${app.admin.username:}")
+    private String username;
+    @Value("${app.admin.email:admin@example.com}")
+    private String email;
+    @Value("${app.admin.password:}")
+    private String password;
 
-    @Override @Transactional
+    @Override
+    @Transactional
     public void run(ApplicationArguments args) {
         if (username == null || username.isBlank() || password == null || password.isBlank()) return;
-        if (password.length() < 12) throw new IllegalStateException("APP_ADMIN_PASSWORD должен быть не короче 12 символов");
+        if (password.length() < 12)
+            throw new IllegalStateException("APP_ADMIN_PASSWORD должен быть не короче 12 символов");
         if (users.existsByUsername(username)) {
             AppUser existing = users.findByUsername(username).orElseThrow();
             if (existing.getRole() != Role.ADMIN) {

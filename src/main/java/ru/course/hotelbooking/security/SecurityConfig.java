@@ -10,23 +10,29 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration @EnableMethodSecurity
+@Configuration
+@EnableMethodSecurity
 public class SecurityConfig {
-    @Bean PasswordEncoder passwordEncoder() { return new BCryptPasswordEncoder(); }
-    @Bean SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Bean
+    PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
-            .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .httpBasic(Customizer.withDefaults())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
-                .requestMatchers(HttpMethod.POST, "/api/hotels", "/api/rooms", "/api/users").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/hotels/**", "/api/rooms/**", "/api/users/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/hotels/**", "/api/rooms/**", "/api/users/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.POST, "/api/hotels/*/photos").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, "/api/hotels/*/photos/*").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.GET, "/api/bookings", "/api/bookings/").hasRole("ADMIN")
-                .requestMatchers("/api/statistics/**").hasRole("ADMIN")
-                .anyRequest().authenticated()
-            ).build();
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .httpBasic(Customizer.withDefaults())
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/users/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/hotels", "/api/rooms", "/api/users").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/hotels/**", "/api/rooms/**", "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/hotels/**", "/api/rooms/**", "/api/users/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/hotels/*/photos").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/hotels/*/photos/*").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/bookings", "/api/bookings/").hasRole("ADMIN")
+                        .requestMatchers("/api/statistics/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                ).build();
     }
 }

@@ -12,7 +12,8 @@ import ru.course.hotelbooking.model.*;
 import ru.course.hotelbooking.repository.*;
 import ru.course.hotelbooking.statistics.RegistrationCreated;
 
-@Service @RequiredArgsConstructor
+@Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository users;
     private final BookingRepository bookings;
@@ -23,9 +24,11 @@ public class UserService {
     @Transactional
     public UserResponse register(UserRequest request) {
         // Публичная регистрация НИКОГДА не может назначить роль ADMIN.
-        if (request.role() != Role.USER) throw new BadRequestException("Публичная регистрация доступна только с ролью USER");
+        if (request.role() != Role.USER)
+            throw new BadRequestException("Публичная регистрация доступна только с ролью USER");
         return create(request);
     }
+
     @Transactional
     public UserResponse create(UserRequest request) {
         checkUnique(request.username(), request.email(), null);
@@ -35,15 +38,23 @@ public class UserService {
         events.publishEvent(new RegistrationCreated(user.getId()));
         return mapper.toResponse(user);
     }
+
     @Transactional(readOnly = true)
-    public UserResponse get(Long id) {return mapper.toResponse(entity(id));}
+    public UserResponse get(Long id) {
+        return mapper.toResponse(entity(id));
+    }
+
     @Transactional(readOnly = true)
-    public UserEditResponse getEditDto(Long id) {return mapper.toEditDto(entity(id));}
+    public UserEditResponse getEditDto(Long id) {
+        return mapper.toEditDto(entity(id));
+    }
+
     @Transactional(readOnly = true)
     public UserResponse findByUsername(String username) {
         return mapper.toResponse(users.findByUsername(username)
-          .orElseThrow(() -> new NotFoundException("Пользователь не найден: " + username)));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден: " + username)));
     }
+
     @Transactional
     public UserResponse update(Long id, UserUpdateRequest request) {
         AppUser user = entity(id);
@@ -54,17 +65,20 @@ public class UserService {
         }
         return mapper.toResponse(user);
     }
+
     @Transactional
     public void delete(Long id) {
         AppUser user = entity(id);
         if (bookings.existsByUserId(id)) throw new BadRequestException("Нельзя удалить пользователя с бронированиями");
         users.delete(user);
     }
+
     private void checkUnique(String username, String email, Long id) {
         boolean usernameTaken = id == null ? users.existsByUsername(username) : users.existsByUsernameAndIdNot(username, id);
         boolean emailTaken = id == null ? users.existsByEmail(email) : users.existsByEmailAndIdNot(email, id);
         if (usernameTaken || emailTaken) throw new BadRequestException("Логин или email уже зарегистрированы");
     }
+
     public AppUser entity(Long id) {
         return users.findById(id).orElseThrow(() -> new NotFoundException("Пользователь не найден: " + id));
     }

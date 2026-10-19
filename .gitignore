@@ -5,3 +5,7 @@
 .DS_Store
 *.log
 /out/
+
+e2e-results/
+__pycache__/
+*.pyc
